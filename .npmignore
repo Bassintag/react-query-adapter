@@ -1,5 +1,12 @@
+.husky/
+.github/
+.lintstagedrc.json
+
 src/
 node_modules/
 
 *.lockb
 tsconfig.json
+
+.idea/
+*.iml
