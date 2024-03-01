@@ -1,4 +1,9 @@
 name: build-publish
+on:
+  push:
+    branches:
+      - master
+
 jobs:
   build:
     name: build
