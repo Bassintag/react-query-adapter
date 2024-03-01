@@ -54,7 +54,7 @@ export const createQueryAdapter = <ResourceT, IdT>(
       return (id) => {
         return useQuery({
           ...options,
-          queryFn: (context) => queryFn(context, id),
+          queryFn: (context) => queryFn(id, context),
           queryKey: result.getResourceKey(id),
         });
       };
@@ -67,7 +67,7 @@ export const createQueryAdapter = <ResourceT, IdT>(
         return useQuery({
           ...options,
           queryFn: async (context) => {
-            const data = await queryFn(context, filters);
+            const data = await queryFn(filters, context);
             if (persistResources) {
               for (const resource of data) {
                 queryClient.setQueryData(
