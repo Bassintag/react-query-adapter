@@ -7,7 +7,8 @@ import {
 } from "@tanstack/react-query";
 import { QueryAdapter } from "../domain";
 
-export type InfiniteResourceQueryFunction<PageT, FiltersT> = (
+export type InfiniteResourceQueryFunction<PageT, FiltersT, PageParamT> = (
+  page: PageParamT,
   filters?: FiltersT,
 ) => PageT | Promise<PageT>;
 
@@ -30,9 +31,15 @@ export interface CreateInfiniteResourceQueryOptions<ResourceT, PageT>
   getItems?: (page: PageT) => ResourceT[];
 }
 
-export const createInfiniteResourceQuery = <ResourceT, IdT, PageT, FiltersT>(
+export const createInfiniteResourceQuery = <
+  ResourceT,
+  IdT,
+  PageT,
+  FiltersT,
+  PageParamT,
+>(
   adapter: QueryAdapter<ResourceT, IdT>,
-  queryFn: InfiniteResourceQueryFunction<PageT, FiltersT>,
+  queryFn: InfiniteResourceQueryFunction<PageT, FiltersT, PageParamT>,
   defaultOptions: CreateInfiniteResourceQueryOptions<ResourceT, PageT>,
 ): InfiniteResourceQueryHook<PageT, FiltersT> => {
   const { persistResources, getItems, ...hookDefaultOptions } = defaultOptions;
@@ -40,8 +47,8 @@ export const createInfiniteResourceQuery = <ResourceT, IdT, PageT, FiltersT>(
     return useInfiniteQuery({
       ...hookDefaultOptions,
       ...options,
-      queryFn: async () => {
-        const data = await queryFn(filters);
+      queryFn: async ({ pageParam }) => {
+        const data = await queryFn(pageParam as PageParamT, filters);
         if (persistResources && getItems) {
           adapter.setResourceListCache(getItems(data));
         }
