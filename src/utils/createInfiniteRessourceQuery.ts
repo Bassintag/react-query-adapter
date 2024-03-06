@@ -30,8 +30,8 @@ export interface CreateInfiniteResourceQueryOptions<ResourceT, PageT>
   getItems?: (page: PageT) => ResourceT[];
 }
 
-export const createInfiniteResourceQuery = <ResourceT, PageT, FiltersT>(
-  adapter: QueryAdapter<ResourceT>,
+export const createInfiniteResourceQuery = <ResourceT, IdT, PageT, FiltersT>(
+  adapter: QueryAdapter<ResourceT, IdT>,
   queryFn: InfiniteResourceQueryFunction<PageT, FiltersT>,
   defaultOptions: CreateInfiniteResourceQueryOptions<ResourceT, PageT>,
 ): InfiniteResourceQueryHook<PageT, FiltersT> => {

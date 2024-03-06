@@ -20,11 +20,12 @@ export type ResourceMutationHook<DataT, ErrorT, ParamT> = (
 
 export const createResourceMutation = <
   ResourceT,
+  IdT,
   DataT extends ResourceT | void,
   ErrorT,
   ParamT,
 >(
-  adapter: QueryAdapter<ResourceT>,
+  adapter: QueryAdapter<ResourceT, IdT>,
   mutationFn: ResourceMutationFunction<DataT, ParamT>,
   defaultOptions?: ResourceMutationHookOptions<DataT, ErrorT, ParamT>,
 ): ResourceMutationHook<DataT, ErrorT, ParamT> => {

@@ -1,17 +1,8 @@
-import {
-  InvalidateOptions,
-  QueryKey,
-  UseInfiniteQueryOptions,
-} from "@tanstack/react-query";
+import { InvalidateOptions, QueryKey } from "@tanstack/react-query";
 import { QueryKeyPart } from "./QueryKeyPart.ts";
 import { InvalidateFilters } from "./InvalidateFilters.ts";
 
-export interface CreateResourcePageQueryOptions<PageT>
-  extends Omit<UseInfiniteQueryOptions<PageT>, "queryFn" | "queryKey"> {
-  persistResources?: boolean;
-}
-
-export interface QueryAdapter<ResourceT, IdT = QueryKeyPart> {
+export interface QueryAdapter<ResourceT, IdT> {
   getKey: (...parts: QueryKeyPart[]) => QueryKey;
   getResourceKey: (id: IdT) => QueryKey;
   getResourceListKey: (filters?: QueryKeyPart) => QueryKey;
