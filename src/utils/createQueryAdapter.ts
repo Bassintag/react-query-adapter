@@ -1,9 +1,10 @@
 import { QueryAdapter, QueryKeyPart } from "../domain";
-import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { QueryClient } from "@tanstack/react-query";
 
 export interface CreateQueryAdapterOptions<T, IdT> {
   getId?: (resource: T) => IdT;
   listKey?: QueryKeyPart;
+  pageKey?: QueryKeyPart;
 }
 
 export type CreateQueryAdapterResult<ResourceT, IdT> = QueryAdapter<
@@ -16,7 +17,11 @@ export const createQueryAdapter = <ResourceT, IdT>(
   resourceName: string,
   options: CreateQueryAdapterOptions<ResourceT, IdT> = {},
 ): CreateQueryAdapterResult<ResourceT, IdT> => {
-  const { getId = (r) => (r as any)["id"] as IdT, listKey = "_list" } = options;
+  const {
+    getId = (r) => (r as any)["id"] as IdT,
+    listKey = "_list",
+    pageKey = "_page",
+  } = options;
 
   const result: CreateQueryAdapterResult<ResourceT, IdT> = {
     getKey: (...parts) => {
@@ -27,6 +32,9 @@ export const createQueryAdapter = <ResourceT, IdT>(
     },
     getResourceListKey: (filters?: QueryKeyPart) => {
       return [resourceName, listKey, filters];
+    },
+    getResourcePageKey: (filters?: QueryKeyPart) => {
+      return [resourceName, pageKey, filters];
     },
 
     invalidate: async (filters, options) => {
@@ -50,45 +58,19 @@ export const createQueryAdapter = <ResourceT, IdT>(
       );
     },
 
-    createResourceQuery: (queryFn, options) => {
-      return (id) => {
-        return useQuery({
-          ...options,
-          queryFn: (context) => queryFn(id, context),
-          queryKey: result.getResourceKey(id),
-        });
-      };
+    setResourceCache: (resource: ResourceT) => {
+      queryClient.setQueryData(
+        result.getResourceKey(getId(resource)),
+        resource,
+      );
     },
-    createResourceListQuery: (
-      queryFn,
-      { persistResources = true, ...options } = {},
-    ) => {
-      return (filters) => {
-        return useQuery({
-          ...options,
-          queryFn: async (context) => {
-            const data = await queryFn(filters, context);
-            if (persistResources) {
-              for (const resource of data) {
-                queryClient.setQueryData(
-                  result.getResourceKey(getId(resource)),
-                  resource,
-                );
-              }
-            }
-            return data;
-          },
-          queryKey: result.getResourceListKey(filters),
-        });
-      };
-    },
-    createResourceMutation: (mutationFn, options) => {
-      return () => {
-        return useMutation({
-          ...options,
-          mutationFn,
-        });
-      };
+    setResourceListCache: (resources: ResourceT[]) => {
+      for (const resource of resources) {
+        queryClient.setQueryData(
+          result.getResourceKey(getId(resource)),
+          resource,
+        );
+      }
     },
   };
 
