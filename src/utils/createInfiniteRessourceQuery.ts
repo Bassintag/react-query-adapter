@@ -58,7 +58,7 @@ export const createInfiniteResourceQuery = <
         }
         return data;
       },
-      queryKey: adapter.getResourceListKey(filters),
+      queryKey: adapter.getResourceInfiniteListKey(filters),
     });
   };
 };
