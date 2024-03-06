@@ -24,7 +24,7 @@ export interface CreateResourceListQueryOptions<ResourceT>
   persistResources?: boolean;
 }
 
-export const createResourceListQuery = <ResourceT, IdT, FiltersT>(
+export const createResourceListQuery = <ResourceT, IdT, FiltersT = void>(
   adapter: QueryAdapter<ResourceT, IdT>,
   queryFn: ResourceListQueryFunction<ResourceT, FiltersT>,
   defaultOptions: CreateResourceListQueryOptions<ResourceT> = {},
