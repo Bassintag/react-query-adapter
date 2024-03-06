@@ -1,4 +1,6 @@
 import {
+  DefaultError,
+  InfiniteData,
   useInfiniteQuery,
   UseInfiniteQueryOptions,
   UseInfiniteQueryResult,
@@ -10,7 +12,7 @@ export type InfiniteResourceQueryFunction<PageT, FiltersT> = (
 ) => PageT | Promise<PageT>;
 
 export type InfiniteResourceQueryHookOptions<PageT> = Omit<
-  UseInfiniteQueryOptions<PageT>,
+  UseInfiniteQueryOptions<PageT, DefaultError, InfiniteData<PageT>>,
   "queryFn" | "queryKey"
 >;
 
@@ -20,7 +22,7 @@ export type InfiniteResourceQueryHook<PageT, FiltersT> = (
     InfiniteResourceQueryHookOptions<PageT>,
     "getNextPageParam" | "initialPageParam"
   >,
-) => UseInfiniteQueryResult<PageT>;
+) => UseInfiniteQueryResult<InfiniteData<PageT>>;
 
 export interface CreateInfiniteResourceQueryOptions<ResourceT, PageT>
   extends InfiniteResourceQueryHookOptions<PageT> {
