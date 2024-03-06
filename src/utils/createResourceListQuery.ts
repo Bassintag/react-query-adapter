@@ -15,7 +15,7 @@ export type ResourceListQueryHookOptions<ResourceT> = Omit<
 >;
 
 export type ResourceListQueryHook<ResourceT, FiltersT> = (
-  filters: FiltersT,
+  filters?: FiltersT,
   options?: ResourceListQueryHookOptions<ResourceT>,
 ) => UseQueryResult<ResourceT[]>;
 

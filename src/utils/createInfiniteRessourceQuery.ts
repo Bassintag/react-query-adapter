@@ -18,7 +18,7 @@ export type InfiniteResourceQueryHookOptions<PageT> = Omit<
 >;
 
 export type InfiniteResourceQueryHook<PageT, FiltersT> = (
-  filters: FiltersT,
+  filters?: FiltersT,
   options?: Omit<
     InfiniteResourceQueryHookOptions<PageT>,
     "getNextPageParam" | "initialPageParam"
