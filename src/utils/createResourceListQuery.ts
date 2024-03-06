@@ -6,7 +6,7 @@ import {
 import { QueryAdapter } from "../domain";
 
 export type ResourceListQueryFunction<ResourceT, FiltersT> = (
-  filters: FiltersT,
+  filters?: FiltersT,
 ) => ResourceT[] | Promise<ResourceT[]>;
 
 export type ResourceListQueryHookOptions<ResourceT> = Omit<
@@ -24,7 +24,7 @@ export interface CreateResourceListQueryOptions<ResourceT>
   persistResources?: boolean;
 }
 
-export const createResourceListQuery = <ResourceT, IdT, FiltersT = void>(
+export const createResourceListQuery = <ResourceT, IdT, FiltersT>(
   adapter: QueryAdapter<ResourceT, IdT>,
   queryFn: ResourceListQueryFunction<ResourceT, FiltersT>,
   defaultOptions: CreateResourceListQueryOptions<ResourceT> = {},

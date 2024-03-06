@@ -6,7 +6,7 @@ import {
 import { QueryAdapter } from "../domain";
 
 export type InfiniteResourceQueryFunction<PageT, FiltersT> = (
-  filters: FiltersT,
+  filters?: FiltersT,
 ) => PageT | Promise<PageT>;
 
 export type InfiniteResourceQueryHookOptions<PageT> = Omit<
@@ -28,12 +28,7 @@ export interface CreateInfiniteResourceQueryOptions<ResourceT, PageT>
   getItems?: (page: PageT) => ResourceT[];
 }
 
-export const createInfiniteResourceQuery = <
-  ResourceT,
-  IdT,
-  PageT,
-  FiltersT = void,
->(
+export const createInfiniteResourceQuery = <ResourceT, IdT, PageT, FiltersT>(
   adapter: QueryAdapter<ResourceT, IdT>,
   queryFn: InfiniteResourceQueryFunction<PageT, FiltersT>,
   defaultOptions: CreateInfiniteResourceQueryOptions<ResourceT, PageT>,
