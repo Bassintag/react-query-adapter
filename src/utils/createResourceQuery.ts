@@ -1,5 +1,4 @@
 import {
-  QueryFunctionContext,
   useQuery,
   UseQueryOptions,
   UseQueryResult,
@@ -8,7 +7,6 @@ import { QueryAdapter } from "../domain";
 
 export type ResourceQueryFunction<ResourceT, IdT> = (
   id: IdT,
-  context: QueryFunctionContext,
 ) => ResourceT | Promise<ResourceT>;
 
 export type ResourceQueryHookOptions<ResourceT> = Omit<
@@ -33,7 +31,7 @@ export const createResourceQuery = <ResourceT, IdT>(
     return useQuery({
       ...defaultOptions,
       ...options,
-      queryFn: (context) => queryFn(id, context),
+      queryFn: () => queryFn(id),
       queryKey: adapter.getResourceKey(id),
     });
   };

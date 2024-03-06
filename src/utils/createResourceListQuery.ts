@@ -1,5 +1,4 @@
 import {
-  QueryFunctionContext,
   useQuery,
   UseQueryOptions,
   UseQueryResult,
@@ -8,7 +7,6 @@ import { QueryAdapter } from "../domain";
 
 export type ResourceListQueryFunction<ResourceT, FiltersT> = (
   filters: FiltersT,
-  context: QueryFunctionContext,
 ) => ResourceT[] | Promise<ResourceT[]>;
 
 export type ResourceListQueryHookOptions<ResourceT> = Omit<
@@ -36,8 +34,8 @@ export const createResourceListQuery = <ResourceT, IdT, FiltersT>(
     return useQuery({
       ...hookDefaultOptions,
       ...options,
-      queryFn: async (context) => {
-        const data = await queryFn(filters, context);
+      queryFn: async () => {
+        const data = await queryFn(filters);
         if (persistResources) {
           adapter.setResourceListCache(data);
         }

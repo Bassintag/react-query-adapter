@@ -1,5 +1,4 @@
 import {
-  QueryFunctionContext,
   useInfiniteQuery,
   UseInfiniteQueryOptions,
   UseInfiniteQueryResult,
@@ -8,7 +7,6 @@ import { QueryAdapter } from "../domain";
 
 export type InfiniteResourceQueryFunction<PageT, FiltersT> = (
   filters: FiltersT,
-  context: QueryFunctionContext,
 ) => PageT | Promise<PageT>;
 
 export type InfiniteResourceQueryHookOptions<PageT> = Omit<
@@ -40,8 +38,8 @@ export const createInfiniteResourceQuery = <ResourceT, IdT, PageT, FiltersT>(
     return useInfiniteQuery({
       ...hookDefaultOptions,
       ...options,
-      queryFn: async (context) => {
-        const data = await queryFn(filters, context);
+      queryFn: async () => {
+        const data = await queryFn(filters);
         if (persistResources && getItems) {
           adapter.setResourceListCache(getItems(data));
         }
