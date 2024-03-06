@@ -29,7 +29,7 @@ export const createResourceListQuery = <ResourceT, IdT, FiltersT>(
   queryFn: ResourceListQueryFunction<ResourceT, FiltersT>,
   defaultOptions: CreateResourceListQueryOptions<ResourceT> = {},
 ): ResourceListQueryHook<ResourceT, FiltersT> => {
-  const { persistResources, ...hookDefaultOptions } = defaultOptions;
+  const { persistResources = true, ...hookDefaultOptions } = defaultOptions;
   return (filters, options = {}) => {
     return useQuery({
       ...hookDefaultOptions,

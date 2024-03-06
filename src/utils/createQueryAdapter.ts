@@ -4,7 +4,7 @@ import { QueryClient } from "@tanstack/react-query";
 export interface CreateQueryAdapterOptions<T, IdT> {
   getId?: (resource: T) => IdT;
   listKey?: QueryKeyPart;
-  pageKey?: QueryKeyPart;
+  infiniteKey?: QueryKeyPart;
 }
 
 export type CreateQueryAdapterResult<ResourceT, IdT> = QueryAdapter<
@@ -20,7 +20,7 @@ export const createQueryAdapter = <ResourceT, IdT>(
   const {
     getId = (r) => (r as any)["id"] as IdT,
     listKey = "_list",
-    pageKey = "_page",
+    infiniteKey = "_infinite",
   } = options;
 
   const result: CreateQueryAdapterResult<ResourceT, IdT> = {
@@ -30,11 +30,17 @@ export const createQueryAdapter = <ResourceT, IdT>(
     getResourceKey: (id) => {
       return [resourceName, id];
     },
-    getResourceListKey: (filters?: QueryKeyPart) => {
-      return [resourceName, listKey, filters];
+    getResourceListKey: (...filters) => {
+      if (filters == null) {
+        return [resourceName, listKey];
+      }
+      return [resourceName, listKey, ...filters];
     },
-    getResourcePageKey: (filters?: QueryKeyPart) => {
-      return [resourceName, pageKey, filters];
+    getResourceInfiniteListKey: (filters) => {
+      if (filters == null) {
+        return [resourceName, listKey];
+      }
+      return [resourceName, infiniteKey, filters];
     },
 
     invalidate: async (filters, options) => {
@@ -47,12 +53,22 @@ export const createQueryAdapter = <ResourceT, IdT>(
         options,
       );
     },
-    invalidateLists: async (filters, options) => {
+    invalidateLists: async (filters, invalidateFilters, options) => {
       return await queryClient.invalidateQueries(
         {
           exact: false,
-          ...filters,
-          queryKey: result.getResourceListKey(),
+          ...invalidateFilters,
+          queryKey: result.getResourceListKey(filters),
+        },
+        options,
+      );
+    },
+    invalidateInfiniteLists: async (filters, invalidateFilters, options) => {
+      return await queryClient.invalidateQueries(
+        {
+          exact: false,
+          ...invalidateFilters,
+          queryKey: result.getResourceInfiniteListKey(filters),
         },
         options,
       );

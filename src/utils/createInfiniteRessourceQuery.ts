@@ -42,7 +42,11 @@ export const createInfiniteResourceQuery = <
   queryFn: InfiniteResourceQueryFunction<PageT, FiltersT, PageParamT>,
   defaultOptions: CreateInfiniteResourceQueryOptions<ResourceT, PageT>,
 ): InfiniteResourceQueryHook<PageT, FiltersT> => {
-  const { persistResources, getItems, ...hookDefaultOptions } = defaultOptions;
+  const {
+    persistResources = true,
+    getItems,
+    ...hookDefaultOptions
+  } = defaultOptions;
   return (filters, options = {}) => {
     return useInfiniteQuery({
       ...hookDefaultOptions,

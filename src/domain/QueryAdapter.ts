@@ -6,14 +6,20 @@ export interface QueryAdapter<ResourceT, IdT> {
   getKey: (...parts: QueryKeyPart[]) => QueryKey;
   getResourceKey: (id: IdT) => QueryKey;
   getResourceListKey: (filters?: QueryKeyPart) => QueryKey;
-  getResourcePageKey: (filters?: QueryKeyPart) => QueryKey;
+  getResourceInfiniteListKey: (filters?: QueryKeyPart) => QueryKey;
 
   invalidate: (
-    filters?: InvalidateFilters,
+    invalidateFilters?: InvalidateFilters,
     options?: InvalidateOptions,
   ) => Promise<void>;
   invalidateLists: (
-    filters?: InvalidateFilters,
+    filters?: QueryKeyPart,
+    invalidateFilters?: InvalidateFilters,
+    options?: InvalidateOptions,
+  ) => Promise<void>;
+  invalidateInfiniteLists: (
+    filters?: QueryKeyPart,
+    invalidateFilters?: InvalidateFilters,
     options?: InvalidateOptions,
   ) => Promise<void>;
 
