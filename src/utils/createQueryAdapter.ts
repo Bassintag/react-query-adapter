@@ -1,5 +1,6 @@
 import { QueryAdapter, QueryKeyPart } from "../domain";
-import { QueryClient } from "@tanstack/react-query";
+import { InfiniteData, QueryClient } from "@tanstack/react-query";
+import { Page } from "../domain/Page.ts";
 
 export interface CreateQueryAdapterOptions<T, IdT> {
   getId?: (resource: T) => IdT;
@@ -75,10 +76,47 @@ export const createQueryAdapter = <ResourceT, IdT>(
     },
 
     setResourceCache: (resource: ResourceT) => {
-      queryClient.setQueryData(
-        result.getResourceKey(getId(resource)),
-        resource,
-      );
+      const id = getId(resource);
+      queryClient.setQueryData(result.getResourceKey(id), resource);
+      const lists = queryClient.getQueriesData<ResourceT[]>({
+        queryKey: result.getResourceListKey(),
+        exact: false,
+      });
+      for (const [key, list] of lists) {
+        if (list == null) continue;
+        const index = list.findIndex((item) => getId(item) === id);
+        if (index < 0) continue;
+        const copy = [...list];
+        copy[index] = resource;
+        queryClient.setQueryData(key, copy);
+      }
+      const infiniteLists = queryClient.getQueriesData<
+        InfiniteData<Page<ResourceT>>
+      >({
+        queryKey: result.getResourceInfiniteListKey(),
+        exact: false,
+      });
+      for (const [key, data] of infiniteLists) {
+        if (data == null) continue;
+        let needsChange = false;
+        const pages: Page<ResourceT>[] = [];
+        for (const page of data.pages) {
+          const index = page.items.findIndex((item) => getId(item) === id);
+          if (index < 0) {
+            pages.push(page);
+          } else {
+            needsChange = true;
+            const copy = [...page.items];
+            copy[index] = resource;
+            pages.push({
+              ...page,
+              items: copy,
+            });
+          }
+        }
+        if (!needsChange) continue;
+        queryClient.setQueryData(key, { ...data, pages });
+      }
     },
     setResourceListCache: (resources: ResourceT[]) => {
       for (const resource of resources) {
