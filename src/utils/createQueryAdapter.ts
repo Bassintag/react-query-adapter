@@ -39,7 +39,7 @@ export const createQueryAdapter = <ResourceT, IdT>(
     },
     getResourceInfiniteListKey: (filters) => {
       if (filters == null) {
-        return [resourceName, listKey];
+        return [resourceName, infiniteKey];
       }
       return [resourceName, infiniteKey, filters];
     },
